@@ -39,6 +39,10 @@ Shader "Fluid/Raymarching"
                 return o;
             }
 
+            Texture2D<float4> _TextureMap; // 纹理贴图
+            SamplerState linearClampSamplerTexture;
+            const float _TextureScale;   // 纹理缩放比例
+
             Texture3D<float4> DensityMap;
             SamplerState linearClampSampler;
 
@@ -508,6 +512,39 @@ Shader "Fluid/Raymarching"
                 return lerp(colGround, skyGradient, groundToSkyT) + sun * (groundToSkyT >= 1);
             }
 
+            // float3 SampleEnvironment(float3 pos, float3 dir)
+            // {
+            //     HitInfo floorInfo = RayBox(pos, dir, floorPos, floorSize);
+            //     HitInfo cubeInfo = RayBoxWithMatrix(pos, dir, cubeLocalToWorld, cubeWorldToLocal);
+
+            //     if (cubeInfo.didHit && cubeInfo.dst < floorInfo.dst)
+            //     {
+            //         return saturate(dot(cubeInfo.normal, dirToSun) * 0.5 + 0.5) * cubeCol;
+            //     }
+            //     else if (floorInfo.didHit)
+            //     {
+            //         Choose tileCol based on quadrant
+            //         float3 tileCol = floorInfo.hitPoint.x < 0 ? tileCol1 : tileCol2;
+            //         if (floorInfo.hitPoint.z < 0) tileCol = floorInfo.hitPoint.x < 0 ? tileCol3 : tileCol4;
+
+            //         If tile is a dark tile, then darken it
+            //         int2 tileCoord = floor(floorInfo.hitPoint.xz * tileScale);
+            //         bool isDarkTile = Modulo(tileCoord.x, 2) == Modulo(tileCoord.y, 2);
+            //         tileCol = TweakHSV(tileCol, float3(0, 0, tileDarkOffset * isDarkTile));
+
+            //         Vary hue/sat/val randomly
+            //         uint rngState = HashInt2(tileCoord);
+            //         float3 randomVariation = RandomSNorm3(rngState) * tileColVariation * 0.1;
+            //         tileCol = TweakHSV(tileCol, randomVariation);
+
+            //         float3 shadowMap = Transmittance(CalculateDensityAlongRay(floorInfo.hitPoint, _WorldSpaceLightPos0, lightStepSize * 2) * 2);
+            //         bool inShadow = RayBoxWithMatrix(floorInfo.hitPoint, dirToSun, cubeLocalToWorld, cubeWorldToLocal).didHit;
+            //         if (inShadow) shadowMap *= 0.2;
+            //         return tileCol * shadowMap;
+            //     }
+
+            //     return SampleSky(dir);
+            // }
             float3 SampleEnvironment(float3 pos, float3 dir)
             {
                 HitInfo floorInfo = RayBox(pos, dir, floorPos, floorSize);
@@ -519,24 +556,17 @@ Shader "Fluid/Raymarching"
                 }
                 else if (floorInfo.didHit)
                 {
-                    // Choose tileCol based on quadrant
-                    float3 tileCol = floorInfo.hitPoint.x < 0 ? tileCol1 : tileCol2;
-                    if (floorInfo.hitPoint.z < 0) tileCol = floorInfo.hitPoint.x < 0 ? tileCol3 : tileCol4;
+                    // 计算纹理坐标
+                    float2 texCoord = frac(floorInfo.hitPoint.xz * _TextureScale);
 
-                    // If tile is a dark tile, then darken it
-                    int2 tileCoord = floor(floorInfo.hitPoint.xz * tileScale);
-                    bool isDarkTile = Modulo(tileCoord.x, 2) == Modulo(tileCoord.y, 2);
-                    tileCol = TweakHSV(tileCol, float3(0, 0, tileDarkOffset * isDarkTile));
+                    // 从纹理贴图中采样颜色
+                    float3 textureColor = _TextureMap.SampleLevel(linearClampSampler, texCoord, 0).rgb;
 
-                    // Vary hue/sat/val randomly
-                    uint rngState = HashInt2(tileCoord);
-                    float3 randomVariation = RandomSNorm3(rngState) * tileColVariation * 0.1;
-                    tileCol = TweakHSV(tileCol, randomVariation);
-
+                    // 计算阴影
                     float3 shadowMap = Transmittance(CalculateDensityAlongRay(floorInfo.hitPoint, _WorldSpaceLightPos0, lightStepSize * 2) * 2);
                     bool inShadow = RayBoxWithMatrix(floorInfo.hitPoint, dirToSun, cubeLocalToWorld, cubeWorldToLocal).didHit;
                     if (inShadow) shadowMap *= 0.2;
-                    return tileCol * shadowMap;
+                    return textureColor * shadowMap;
                 }
 
                 return SampleSky(dir);

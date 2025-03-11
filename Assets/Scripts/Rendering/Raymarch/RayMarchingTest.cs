@@ -22,7 +22,10 @@ namespace Seb.Fluid.Rendering
 		public Transform cubeTransform;
 		public Shader shader;
 
-		Material raymarchMat;
+        public Texture2D textureMap; // 拖拽你的纹理到这里
+        public float textureScale = 1.0f; // 纹理缩放比例
+
+        Material raymarchMat;
 
 		void Start()
 		{
@@ -47,7 +50,19 @@ namespace Seb.Fluid.Rendering
 		void SetShaderParams()
 		{
 			SetEnvironmentParams(raymarchMat, environmentSettings);
-			raymarchMat.SetTexture("DensityMap", sim.DensityMap);
+
+            if (textureMap == null)
+            {
+                Debug.LogError("Texture is not assigned!");
+                return;
+            }
+
+            // 将纹理传递给 Shader
+            raymarchMat.SetTexture("_TextureMap", textureMap);
+            raymarchMat.SetFloat("_TextureScale", textureScale);
+
+
+            raymarchMat.SetTexture("DensityMap", sim.DensityMap);
 			raymarchMat.SetVector("boundsSize", sim.Scale);
 			raymarchMat.SetFloat("volumeValueOffset", densityOffset);
 			raymarchMat.SetVector("testParams", testParams);
