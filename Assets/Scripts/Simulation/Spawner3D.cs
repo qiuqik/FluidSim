@@ -20,16 +20,19 @@ namespace Seb.Fluid.Simulation
 
 		public SpawnData GetSpawnData()
 		{
+			Debug.Log("===log=== particleSpawnDensity: " + particleSpawnDensity);
 			List<float3> allPoints = new();
 			List<float3> allVelocities = new();
 
 			foreach (SpawnRegion region in spawnRegions)
 			{
-				int particlesPerAxis = region.CalculateParticleCountPerAxis(particleSpawnDensity);
-				(float3[] points, float3[] velocities) = SpawnCube(particlesPerAxis, region.centre, Vector3.one * region.size);
+				int particlesPerAxis = region.CalculateParticleCountPerAxis(PlayerPrefs.GetInt("ParticleDensity"));//particleSpawnDensity
+                (float3[] points, float3[] velocities) = SpawnCube(particlesPerAxis, region.centre, Vector3.one * region.size);
 				allPoints.AddRange(points);
 				allVelocities.AddRange(velocities);
-			}
+
+				OnValidate();
+            }
 
 			return new SpawnData() { points = allPoints.ToArray(), velocities = allVelocities.ToArray() };
 		}
@@ -78,8 +81,8 @@ namespace Seb.Fluid.Simulation
 				foreach (SpawnRegion region in spawnRegions)
 				{
 					debug_spawn_volume += region.Volume;
-					int numPerAxis = region.CalculateParticleCountPerAxis(particleSpawnDensity);
-					debug_num_particles += numPerAxis * numPerAxis * numPerAxis;
+					int numPerAxis = region.CalculateParticleCountPerAxis(PlayerPrefs.GetInt("ParticleDensity"));//particleSpawnDensity
+                    debug_num_particles += numPerAxis * numPerAxis * numPerAxis;
 				}
 			}
 		}

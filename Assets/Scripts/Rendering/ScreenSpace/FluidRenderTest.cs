@@ -3,6 +3,9 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Experimental.Rendering;
 using Seb.Fluid.Simulation;
+using TMPro;
+using UnityEngine.UI;
+
 
 namespace Seb.Fluid.Rendering
 {
@@ -68,9 +71,23 @@ namespace Seb.Fluid.Rendering
 		BilateralSmooth2D bilateral2D = new();
 		GaussSmooth gaussSmooth = new();
 
-		void Update()
+        // UI
+        public TextMeshProUGUI ParticleSizeText;
+        public Slider ParticleSizeSlider;
+
+        void Update()
 		{
-			Init();
+            if (ParticleSizeText != null)
+            {
+                ParticleSizeText.text = "ParticleSize: " + depthParticleSize.ToString();
+            }
+            if (ParticleSizeSlider != null)
+            {
+                ParticleSizeSlider.onValueChanged.AddListener(sliderParticleSizeSliderChanged);
+            }
+
+
+            Init();
 			RenderCamSetup();
 			ShadowCamSetup();
 			BuildCommands();
@@ -79,7 +96,15 @@ namespace Seb.Fluid.Rendering
 			HandleDebugDisplayInput();
 		}
 
-		void BuildCommands()
+        //UI
+        void sliderParticleSizeSliderChanged(float value)
+        {
+            depthParticleSize = value;
+            ParticleSizeText.text = "ParticleSize: " + value.ToString();
+        }
+
+
+        void BuildCommands()
 		{
             // ---- Shadow cmds ----
             shadowCmd.Clear();

@@ -94,16 +94,21 @@ namespace Seb.Fluid.Simulation
 
 		// UI
 		public TextMeshProUGUI ParticleNumText;
-        public Slider sliderParticleDensity;
+		public TextMeshProUGUI ParticleDensity;
+        public TextMeshProUGUI GravityNumText;
+        public Slider GravitySlider;
 
         void Start()
 		{
 			Debug.Log("Controls: Space = Play/Pause, Q = SlowMode, R = Reset");
 			Debug.Log($"screen width and height: {Screen.width} {Screen.height}");
-            isPaused = false;
 
-			Initialize();
-		}
+            spawner.particleSpawnDensity = PlayerPrefs.GetInt("ParticleDensity");
+            isPaused = false;
+            Initialize();
+
+			
+        }
 
 		void Initialize()
         {
@@ -299,8 +304,22 @@ namespace Seb.Fluid.Simulation
 
 			HandleInput();
 
-            ParticleNumText.text = "ParticleNum: " + spawner.debug_num_particles.ToString();
-
+			if (ParticleNumText != null)
+			{
+				ParticleNumText.text = "ParticleNum: " + spawner.debug_num_particles.ToString();
+			}
+            if (ParticleDensity != null)
+			{
+                ParticleDensity.text = "ParticleDensity: " + spawner.particleSpawnDensity.ToString();
+            }
+			if (GravityNumText != null)
+			{
+                GravityNumText.text = "Gravity: " + gravity.ToString();
+            }
+            if (GravitySlider != null)
+            {
+                GravitySlider.onValueChanged.AddListener(sliderGravitySliderChanged);
+            }
         }
 
 		void RunSimulationFrame(float frameDeltaTime)
@@ -486,12 +505,11 @@ namespace Seb.Fluid.Simulation
 			isPaused = false;
             pauseNextFrame = true;
         }
-
-		//public void sliderParticleDensityChanged(int value)
-		//{
-		//	spawner.particleSpawnDensity = value;
-		//	buttonReset();
-  //      }
+        void sliderGravitySliderChanged(float value)
+        {
+            gravity = value;
+            GravityNumText.text = "Gravity: " + gravity.ToString();
+        }
 
 
 
