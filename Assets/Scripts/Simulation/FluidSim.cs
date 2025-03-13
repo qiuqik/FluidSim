@@ -5,6 +5,8 @@ using Unity.Mathematics;
 using System.Collections.Generic;
 using static Seb.Helpers.ComputeHelper;
 using UnityEngine.Experimental.Rendering;
+using UnityEngine.UI;
+using TMPro;
 
 namespace Seb.Fluid.Simulation
 {
@@ -90,7 +92,11 @@ namespace Seb.Fluid.Simulation
 		Spawner3D.SpawnData spawnData;
 		Dictionary<ComputeBuffer, string> bufferNameLookup;
 
-		void Start()
+		// UI
+		public TextMeshProUGUI ParticleNumText;
+        public Slider sliderParticleDensity;
+
+        void Start()
 		{
 			Debug.Log("Controls: Space = Play/Pause, Q = SlowMode, R = Reset");
 			Debug.Log($"screen width and height: {Screen.width} {Screen.height}");
@@ -292,7 +298,10 @@ namespace Seb.Fluid.Simulation
 			}
 
 			HandleInput();
-		}
+
+            ParticleNumText.text = "ParticleNum: " + spawner.debug_num_particles.ToString();
+
+        }
 
 		void RunSimulationFrame(float frameDeltaTime)
 		{
@@ -446,7 +455,50 @@ namespace Seb.Fluid.Simulation
 			}
 		}
 
-		private float ActiveTimeScale => inSlowMode ? slowTimeScale : normalTimeScale;
+
+
+
+		//UI Function
+
+		public void buttonPause()
+		{
+            isPaused = true;
+        }
+        public void buttonPlay()
+        {
+            isPaused = false;
+        }
+        public void buttonReset()
+        {
+            pauseNextFrame = true;
+            SetInitialBufferData(spawnData);
+            if (renderToTex3D)
+            {
+                RunSimulationFrame(0);
+            }
+        }
+        public void buttonSlowMode()
+        {
+            inSlowMode = !inSlowMode;
+        }
+        public void buttonNextFrame()
+		{
+			isPaused = false;
+            pauseNextFrame = true;
+        }
+
+		//public void sliderParticleDensityChanged(int value)
+		//{
+		//	spawner.particleSpawnDensity = value;
+		//	buttonReset();
+  //      }
+
+
+
+
+
+
+        private float ActiveTimeScale => inSlowMode ? slowTimeScale : normalTimeScale;
 
 		void OnDestroy()
 		{
