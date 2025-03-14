@@ -97,10 +97,16 @@ namespace Seb.Fluid.Simulation
 		public TextMeshProUGUI ParticleDensity;
         public TextMeshProUGUI GravityNumText;
         public Slider GravitySlider;
+        public TextMeshProUGUI ViscosityText;
+		public Slider ViscositySlider;
+
+        public TextMeshProUGUI fpsText;
+        private float testdeltaTime = 0.0f;
 
         void Start()
 		{
-			Debug.Log("Controls: Space = Play/Pause, Q = SlowMode, R = Reset");
+            Application.targetFrameRate = 60;
+            Debug.Log("Controls: Space = Play/Pause, Q = SlowMode, R = Reset");
 			Debug.Log($"screen width and height: {Screen.width} {Screen.height}");
 
             spawner.particleSpawnDensity = PlayerPrefs.GetInt("ParticleDensity");
@@ -293,7 +299,11 @@ namespace Seb.Fluid.Simulation
 			{
 				float maxDeltaTime = maxTimestepFPS > 0 ? 1 / maxTimestepFPS : float.PositiveInfinity; // If framerate dips too low, run the simulation slower than real-time
 				float dt = Mathf.Min(Time.deltaTime * ActiveTimeScale, maxDeltaTime);
-				RunSimulationFrame(dt);
+
+                testdeltaTime += (Time.unscaledDeltaTime - testdeltaTime) * 0.1f;
+                fpsText.text = ((int)(1.0f / testdeltaTime)).ToString();
+
+                RunSimulationFrame(dt);
 			}
 
 			if (pauseNextFrame)
@@ -312,6 +322,7 @@ namespace Seb.Fluid.Simulation
 			{
                 ParticleDensity.text = "ParticleDensity: " + spawner.particleSpawnDensity.ToString();
             }
+			//
 			if (GravityNumText != null)
 			{
                 GravityNumText.text = "Gravity: " + gravity.ToString();
@@ -319,6 +330,15 @@ namespace Seb.Fluid.Simulation
             if (GravitySlider != null)
             {
                 GravitySlider.onValueChanged.AddListener(sliderGravitySliderChanged);
+            }
+            //
+            if (ViscosityText != null)
+            {
+                ViscosityText.text = "Viscosity: " + (5f - viscosityStrength * 10f).ToString();
+            }
+            if (ViscositySlider != null)
+            {
+                ViscositySlider.onValueChanged.AddListener(sliderViscositySliderChanged);
             }
         }
 
@@ -510,7 +530,11 @@ namespace Seb.Fluid.Simulation
             gravity = value;
             GravityNumText.text = "Gravity: " + gravity.ToString();
         }
-
+		void sliderViscositySliderChanged(float value)
+		{
+            viscosityStrength = 0.5f - value / 10f;
+            ViscosityText.text = "Viscosity: " + value.ToString();
+        }
 
 
 
