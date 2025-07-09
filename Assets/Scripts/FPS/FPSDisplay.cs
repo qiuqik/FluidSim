@@ -17,6 +17,6 @@ public class FPSDisplay : MonoBehaviour
         float fps = 1.0f / deltaTime;
 
         // 实时更新 UI 上的文本
-        fpsText.text = "FPS: " + Mathf.Ceil(fps).ToString();  // 显示帧率，四舍五入为整数
+        fpsText.text = "FPS: " + fps.ToString("F2");  // 显示帧率，四舍五入为整数
     }
 }

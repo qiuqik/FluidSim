@@ -74,12 +74,13 @@ namespace Seb.Fluid.Rendering
         // UI
         public TextMeshProUGUI ParticleSizeText;
         public Slider ParticleSizeSlider;
+        public CameraOrbitControl cameraOrbitControl;
 
         void Update()
 		{
             if (ParticleSizeText != null)
             {
-                ParticleSizeText.text = "ParticleSize: " + depthParticleSize.ToString();
+                ParticleSizeText.text = "ParticleSize: " + depthParticleSize.ToString("F2");
             }
             if (ParticleSizeSlider != null)
             {
@@ -99,8 +100,11 @@ namespace Seb.Fluid.Rendering
         //UI
         void sliderParticleSizeSliderChanged(float value)
         {
+            cameraOrbitControl.enabled = false;
             depthParticleSize = value;
-            ParticleSizeText.text = "ParticleSize: " + value.ToString();
+			thicknessParticleScale = value * 0.7f;
+            ParticleSizeText.text = "ParticleSize: " + value.ToString("F2");
+            cameraOrbitControl.enabled = true;
         }
 
 

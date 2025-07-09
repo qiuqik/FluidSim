@@ -327,7 +327,7 @@ Transform:
   m_GameObject: {fileID: 271053315}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 36, y: 12, z: 8}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -345,6 +345,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8b3b79f98be3f34e8fefade4cef2ade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  scaleX: 5
+  scaleY: 10
+  scaleZ: 8
   normalTimeScale: 1
   slowTimeScale: 0.1
   maxTimestepFPS: 60
@@ -354,7 +357,7 @@ MonoBehaviour:
   targetDensity: 630
   pressureMultiplier: 288
   nearPressureMultiplier: 2.16
-  viscosityStrength: 0
+  viscosityStrength: 0.01
   collisionDamping: 0.95
   foamActive: 0
   maxFoamParticleCount: 1024000
@@ -375,6 +378,17 @@ MonoBehaviour:
   DensityMap: {fileID: 0}
   ParticleNumText: {fileID: 0}
   ParticleDensity: {fileID: 0}
+  GravityNumText: {fileID: 0}
+  GravitySlider: {fileID: 0}
+  ViscosityText: {fileID: 0}
+  ViscositySlider: {fileID: 0}
+  BoxScaleXText: {fileID: 0}
+  BoxScaleXSlider: {fileID: 0}
+  BoxScaleYText: {fileID: 0}
+  BoxScaleYSlider: {fileID: 0}
+  BoxScaleZText: {fileID: 0}
+  BoxScaleZSlider: {fileID: 0}
+  cameraOrbitControl: {fileID: 0}
 --- !u!33 &271053322
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -403,14 +417,11 @@ MonoBehaviour:
   jitterStrength: 0.035
   showSpawnBounds: 1
   spawnRegions:
-  - centre: {x: -10.98, y: -1.17, z: 0}
+  - centre: {x: 0, y: 0, z: 0}
     size: 7
     debugDisplayCol: {r: 1, g: 0.48576674, b: 0.015686274, a: 1}
-  - centre: {x: 10.98, y: -1.17, z: 0}
-    size: 7
-    debugDisplayCol: {r: 0.015686274, g: 0.531419, b: 1, a: 1}
-  debug_num_particles: 65536
-  debug_spawn_volume: 686
+  debug_num_particles: 205379
+  debug_spawn_volume: 343
 --- !u!1 &443908540
 GameObject:
   m_ObjectHideFlags: 0
@@ -543,7 +554,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -728, y: 417}
-  m_SizeDelta: {x: 200, y: 50}
+  m_SizeDelta: {x: 300, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &483506666
 GameObject:
@@ -804,6 +815,9 @@ MonoBehaviour:
   foamTest: {fileID: 744472882}
   textureMap: {fileID: 2800000, guid: 4b00c8d99b9368449b7c552c46a89dce, type: 3}
   textureScale: 1
+  ParticleSizeText: {fileID: 0}
+  ParticleSizeSlider: {fileID: 0}
+  cameraOrbitControl: {fileID: 0}
 --- !u!4 &744472881
 Transform:
   m_ObjectHideFlags: 0
@@ -924,7 +938,7 @@ Transform:
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
   m_LocalRotation: {x: -0.049752623, y: 0.9489242, z: -0.2445004, w: -0.19309902}
-  m_LocalPosition: {x: 13.28, y: 8.79, z: 20.05}
+  m_LocalPosition: {x: 5, y: 6, z: 14}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -963,7 +977,6 @@ MonoBehaviour:
   rotationSpeed: 0.2
   zoomSpeed: 0.05
   minZoom: 2
-  maxZoom: 15
 --- !u!1 &1010500172
 GameObject:
   m_ObjectHideFlags: 0

@@ -262,6 +262,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8b3b79f98be3f34e8fefade4cef2ade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  scaleX: 5
+  scaleY: 10
+  scaleZ: 8
   normalTimeScale: 1
   slowTimeScale: 0.025
   maxTimestepFPS: 60
@@ -292,6 +295,18 @@ MonoBehaviour:
   DensityMap: {fileID: 0}
   ParticleNumText: {fileID: 0}
   ParticleDensity: {fileID: 0}
+  GravityNumText: {fileID: 0}
+  GravitySlider: {fileID: 0}
+  ViscosityText: {fileID: 0}
+  ViscositySlider: {fileID: 0}
+  BoxScaleXText: {fileID: 0}
+  BoxScaleXSlider: {fileID: 0}
+  BoxScaleYText: {fileID: 0}
+  BoxScaleYSlider: {fileID: 0}
+  BoxScaleZText: {fileID: 0}
+  BoxScaleZSlider: {fileID: 0}
+  fpsText: {fileID: 0}
+  cameraOrbitControl: {fileID: 0}
 --- !u!33 &271053322
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -323,7 +338,7 @@ MonoBehaviour:
   - centre: {x: -4, y: -1.42, z: 0}
     size: 7
     debugDisplayCol: {r: 1, g: 0.42878985, b: 0.15566039, a: 1}
-  debug_num_particles: 32768
+  debug_num_particles: 148877
   debug_spawn_volume: 343
 --- !u!1 &505630091
 GameObject:

@@ -14,6 +14,10 @@ namespace Seb.Fluid.Simulation
 	{
 		public event Action<FluidSim> SimulationInitCompleted;
 
+		[Header("BOX Scale")] public float scaleX = 5;
+		public float scaleY = 10;
+		public float scaleZ = 8;
+
 		[Header("Time Step")] public float normalTimeScale = 1;
 		public float slowTimeScale = 0.1f;
 		public float maxTimestepFPS = 60; // if time-step dips lower than this fps, simulation will run slower (set to 0 to disable)
@@ -99,23 +103,104 @@ namespace Seb.Fluid.Simulation
         public Slider GravitySlider;
         public TextMeshProUGUI ViscosityText;
 		public Slider ViscositySlider;
+        public TextMeshProUGUI BoxScaleXText;
+        public Slider BoxScaleXSlider;
+        public TextMeshProUGUI BoxScaleYText;
+        public Slider BoxScaleYSlider;
+        public TextMeshProUGUI BoxScaleZText;
+        public Slider BoxScaleZSlider;
 
-        public TextMeshProUGUI fpsText;
-        private float testdeltaTime = 0.0f;
+        //public TextMeshProUGUI fpsText;
+        //private float testdeltaTime = 0.0f;
+
+		public CameraOrbitControl cameraOrbitControl;
+
+        //public int designWidth = 720; 
+        //public int designHeight = 1280;
 
         void Start()
-		{
+        {
+            //Screen.SetResolution(designWidth, designHeight, true);
             Application.targetFrameRate = 60;
             Debug.Log("Controls: Space = Play/Pause, Q = SlowMode, R = Reset");
 			Debug.Log($"screen width and height: {Screen.width} {Screen.height}");
 
-            spawner.particleSpawnDensity = PlayerPrefs.GetInt("ParticleDensity");
+			//value init
+			if(PlayerPrefs.HasKey("ParticleDensity"))
+                spawner.particleSpawnDensity = PlayerPrefs.GetInt("ParticleDensity");
+            if (PlayerPrefs.HasKey("BoxX"))
+                scaleX = PlayerPrefs.GetFloat("BoxX");
+            if (PlayerPrefs.HasKey("BoxY"))
+                scaleY = PlayerPrefs.GetFloat("BoxY");
+            if (PlayerPrefs.HasKey("BoxZ"))
+                scaleZ = PlayerPrefs.GetFloat("BoxZ");
+			if (PlayerPrefs.HasKey("Iteration"))
+                iterationsPerFrame = PlayerPrefs.GetInt("Iteration");
+
+
             isPaused = false;
             Initialize();
 
-			
+			//init UI
+			initUI();
         }
+		void initUI()
+		{
 
+            if (ParticleNumText != null)
+            {
+                ParticleNumText.text = "ParticleNum: " + spawner.debug_num_particles.ToString();
+            }
+            if (ParticleDensity != null)
+            {
+                ParticleDensity.text = "ParticleDensity: " + spawner.particleSpawnDensity.ToString();
+            }
+            //
+            if (GravityNumText != null)
+            {
+                GravityNumText.text = "Gravity: " + gravity.ToString("F2");
+            }
+            if (GravitySlider != null)
+            {
+                GravitySlider.onValueChanged.AddListener(sliderGravitySliderChanged);
+            }
+            //
+            if (ViscosityText != null)
+            {
+                ViscosityText.text = "Viscosity: " + viscosityStrength.ToString("F2");
+            }
+            if (ViscositySlider != null)
+            {
+                ViscositySlider.onValueChanged.AddListener(sliderViscositySliderChanged);
+            }
+            //
+            if (BoxScaleXText != null)
+            {
+                BoxScaleXText.text = "BoxScaleX: " + (scaleX).ToString("F2");
+            }
+            if (BoxScaleXSlider != null)
+            {
+                BoxScaleXSlider.onValueChanged.AddListener(sliderBoxScaleXSliderChanged);
+            }
+            //
+            if (BoxScaleYText != null)
+            {
+                BoxScaleYText.text = "BoxScaleY: " + (scaleY).ToString("F2");
+            }
+            if (BoxScaleYSlider != null)
+            {
+                BoxScaleYSlider.onValueChanged.AddListener(sliderBoxScaleYSliderChanged);
+            }
+            //
+            if (BoxScaleZText != null)
+            {
+                BoxScaleZText.text = "BoxScaleZ: " + (scaleZ).ToString("F2");
+            }
+            if (BoxScaleZSlider != null)
+            {
+                BoxScaleZSlider.onValueChanged.AddListener(sliderBoxScaleZSliderChanged);
+            }
+        }
 		void Initialize()
         {
             GraphicsFormat compatibleFormat = SystemInfo.GetCompatibleFormat(GraphicsFormat.R32G32B32A32_SFloat, FormatUsage.Render);
@@ -294,14 +379,17 @@ namespace Seb.Fluid.Simulation
 
 		void Update()
 		{
-			// Run simulation
-			if (!isPaused)
+			// value update
+			transform.localScale = new Vector3(scaleX, scaleY, scaleZ);
+
+            // Run simulation
+            if (!isPaused)
 			{
 				float maxDeltaTime = maxTimestepFPS > 0 ? 1 / maxTimestepFPS : float.PositiveInfinity; // If framerate dips too low, run the simulation slower than real-time
 				float dt = Mathf.Min(Time.deltaTime * ActiveTimeScale, maxDeltaTime);
 
-                testdeltaTime += (Time.unscaledDeltaTime - testdeltaTime) * 0.1f;
-                fpsText.text = ((int)(1.0f / testdeltaTime)).ToString();
+                //testdeltaTime += (Time.unscaledDeltaTime - testdeltaTime) * 0.1f;
+                //fpsText.text = ((1.0f / testdeltaTime)).ToString("F2");
 
                 RunSimulationFrame(dt);
 			}
@@ -314,32 +402,6 @@ namespace Seb.Fluid.Simulation
 
 			HandleInput();
 
-			if (ParticleNumText != null)
-			{
-				ParticleNumText.text = "ParticleNum: " + spawner.debug_num_particles.ToString();
-			}
-            if (ParticleDensity != null)
-			{
-                ParticleDensity.text = "ParticleDensity: " + spawner.particleSpawnDensity.ToString();
-            }
-			//
-			if (GravityNumText != null)
-			{
-                GravityNumText.text = "Gravity: " + gravity.ToString();
-            }
-            if (GravitySlider != null)
-            {
-                GravitySlider.onValueChanged.AddListener(sliderGravitySliderChanged);
-            }
-            //
-            if (ViscosityText != null)
-            {
-                ViscosityText.text = "Viscosity: " + (5f - viscosityStrength * 10f).ToString();
-            }
-            if (ViscositySlider != null)
-            {
-                ViscositySlider.onValueChanged.AddListener(sliderViscositySliderChanged);
-            }
         }
 
 		void RunSimulationFrame(float frameDeltaTime)
@@ -527,15 +589,39 @@ namespace Seb.Fluid.Simulation
         }
         void sliderGravitySliderChanged(float value)
         {
+			cameraOrbitControl.enabled = false;
             gravity = value;
-            GravityNumText.text = "Gravity: " + gravity.ToString();
+            GravityNumText.text = "Gravity: " + gravity.ToString("F2");
+			cameraOrbitControl.enabled = true;
         }
 		void sliderViscositySliderChanged(float value)
 		{
-            viscosityStrength = 0.5f - value / 10f;
-            ViscosityText.text = "Viscosity: " + value.ToString();
+			cameraOrbitControl.enabled = false;
+            viscosityStrength = value;
+            ViscosityText.text = "Viscosity: " + value.ToString("F2");
+            cameraOrbitControl.enabled = true;
         }
-
+		void sliderBoxScaleXSliderChanged(float value)
+		{
+			cameraOrbitControl.enabled = false;
+            scaleX = value;
+            BoxScaleXText.text = "BoxScaleX: " + value.ToString("F2");
+            cameraOrbitControl.enabled = true;
+        }
+        void sliderBoxScaleYSliderChanged(float value)
+        {
+            cameraOrbitControl.enabled = false;
+            scaleY = value;
+            BoxScaleYText.text = "BoxScaleY: " + value.ToString("F2");
+            cameraOrbitControl.enabled = true;
+        }
+        void sliderBoxScaleZSliderChanged(float value)
+        {
+            cameraOrbitControl.enabled = false;
+            scaleZ = value;
+            BoxScaleZText.text = "BoxScaleZ: " + value.ToString("F2");
+            cameraOrbitControl.enabled = true;
+        }
 
 
 

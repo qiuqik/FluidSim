@@ -36,6 +36,10 @@ public class SceneLoader : MonoBehaviour
         if (DensitySlider != null)
         {
             DensitySlider.onValueChanged.AddListener(sliderParticleDensityChanged);
+            if (PlayerPrefs.HasKey("ParticleDensity"))
+            {
+                DensitySlider.value = PlayerPrefs.GetInt("ParticleDensity");
+            }
         }
         if (DensityNumText != null)
         {

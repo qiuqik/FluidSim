@@ -9,18 +9,6 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
     guid: 4ff603cd124be7c4fb7426ec3be220c9
   - enabled: 1
-    path: Assets/Scenes/Fluid MarchingCubes.unity
-    guid: d180a7de4a7f02e41ae4f3ab7323efe9
-  - enabled: 1
-    path: Assets/Scenes/Fluid Raymarch.unity
-    guid: 7616a3045e516964f84fbfb2621b48c3
-  - enabled: 0
-    path: Assets/Scenes/Fluid Particles.unity
-    guid: 48c44ee30c2199645bb905f193e2f5f9
-  - enabled: 1
     path: Assets/Scenes/Fluid ScreenSpace 1.unity
     guid: aa97e0130c0334e4395528b96b6a6d15
-  - enabled: 1
-    path: Assets/Scenes/Fluid ScreenSpace 2.unity
-    guid: d3a4687f49f530b49b4494458ca57cbb
   m_configObjects: {}

@@ -24,7 +24,9 @@ namespace Seb.Fluid.Simulation
 			List<float3> allPoints = new();
 			List<float3> allVelocities = new();
 
-			foreach (SpawnRegion region in spawnRegions)
+			spawnRegions[0].size = PlayerPrefs.GetFloat("cubeSize");
+
+            foreach (SpawnRegion region in spawnRegions)
 			{
 				int particlesPerAxis = region.CalculateParticleCountPerAxis(PlayerPrefs.GetInt("ParticleDensity"));//particleSpawnDensity
                 (float3[] points, float3[] velocities) = SpawnCube(particlesPerAxis, region.centre, Vector3.one * region.size);
